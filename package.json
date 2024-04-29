@@ -1,0 +1,29 @@
+{
+  "name": "employee_review_system_api",
+  "version": "1.0.0",
+  "description": "organization internal review system ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chinm333/employee_review_system_api.git"
+  },
+  "type": "module",
+  "author": "Chinmoy",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/chinm333/employee_review_system_api/issues"
+  },
+  "homepage": "https://github.com/chinm333/employee_review_system_api#readme",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "mongoose": "^8.3.2",
+    "nodemon": "^3.1.0"
+  }
+}
