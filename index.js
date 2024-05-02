@@ -5,9 +5,10 @@ import cors from "cors";
 // import employeeRouter from "./employee/employee.js";
 import adminRouter from "./components/admin/admin.js";
 
-const app = express();
-const port = 3000;
 dotenv.config();
+
+const app = express();
+const port = process.env.PORT;
 
 app.use(express.json());
 app.use(cors());

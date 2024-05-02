@@ -10,7 +10,7 @@ import bcrypt from "bcrypt";
 const router = express.Router();
 
 // admin login
-router.post("/login", async (req, res) => {
+router.post("/admin_login", async (req, res) => {
     // disable email typing
     const { password } = req.body;
     if (!password) {
@@ -18,17 +18,57 @@ router.post("/login", async (req, res) => {
     }
     try {
         const user = await AdminModel.findOne({ email: 'admin@gmail.com' });
-        console.log(user);
         if (!user) {
             return res.status(401).send("Invalid email");
-        }
-        if (password === user.password) {
+        }else if (password === user.password) {
+            return res.status(200).json(user);
+            
+        }else{
             return res.status(401).send("Invalid password.");
         }
-        res.status(200).json(user);
     } catch (error) {
         console.error("Error logging in:", error);
         res.status(500).send("Error logging in.");
+    }
+})
+
+router.post("/employee_login", async (req, res) => {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(400).send("All fields are required.");
+    }
+  
+    try {
+      const user = await EmployeeModel.findOne({ email });
+      if (!user) {
+        return res.status(401).send("Invalid email");
+      }
+  
+      // Compare password using bcrypt
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        return res.status(401).send("Invalid password.");
+      }
+  
+      // Login successful, send user data (consider security aspects)
+      res.status(200).json(user);
+    } catch (error) {
+      console.error("Error logging in:", error);
+      res.status(500).send("Error logging in.");
+    }
+  });
+
+router.get("/get_employee_by_mail/:emailId", async (req, res) => {
+    const {emailId} = req.params;
+    try {
+        const employee = await EmployeeModel.findOne({email: emailId});
+        if(employee){
+            return res.status(200).json(employee);
+        }else{
+            return res.status(404).send("Employee not found.");
+        }
+    } catch (error) {
+        console.log(error);
     }
 })
 // create employee
@@ -57,8 +97,9 @@ router.post("/create_employee", async (req, res) => {
     }
 });
 // get employee
-router.get("/get_employee/:employeeId?", async (req, res) => {
+router.get("/get_employee_id/:employeeId?", async (req, res) => {
     let employee;
+    console.log('hello '+req.params.employeeId);
     if (req.params.employeeId) {
         employee = await EmployeeModel.findOne({ employeeId: req.params.employeeId });
     } else {
@@ -66,6 +107,27 @@ router.get("/get_employee/:employeeId?", async (req, res) => {
     }
     return res.status(200).json(employee);
 });
+
+// get all employees names
+
+router.get("/get_employee_names", async (req, res) => {
+    try {
+        const employeeNames = await EmployeeModel.aggregate(
+            [
+                {
+                  $project: {
+                    _id: 0, // Exclude
+                    name: 1, // Include
+                  }
+                }
+              ]
+        );
+        return res.status(200).json(employeeNames);
+      } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Error fetching employee names' });
+      }
+})
 
 // update employee
 router.put("/update_employee/:employeeId", async (req, res) => {
